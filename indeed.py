@@ -2,7 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 
 LIMIT = 50
-URL = f"https://kr.indeed.com/%EC%B7%A8%EC%97%85?q=python&limit={LIMIT}"
+
+# https://kr.indeed.com/취업?q=python&limit=50&start=0
+URL = f"https://kr.indeed.com/취업?q=python&limit={LIMIT}"
 
 
 def extract_indeed_pages():
@@ -29,4 +31,13 @@ def extract_indeed_jobs(last_page):
 
     for result in results:
         title = result.find(class_="title").find('a')['title']
+        company = result.find('span', class_='company')
+        company_anchor = company.find('a')
+        if company_anchor is not None:
+            company = str(company_anchor.string)
+        else:
+            company = str(company.string)
+
+        print(title, company, '\n')
+
     return jobs
