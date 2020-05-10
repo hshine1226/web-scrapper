@@ -24,15 +24,26 @@ def extract_job(html):
     title = html.find('a', class_='s-link')['title']
     company, location = html.find('h3').find_all('span')
 
-    print(company.get_text(strip=True), location.get_text(strip=True))
+    company = company.get_text(strip=True)
+    location = location.get_text(strip=True)
+    job_id = int(html['data-jobid'])
 
-    return {'title': title}
+    # https://stackoverflow.com/jobs?id=377499&pg=2&q=python
+    # https://stackoverflow.com/jobs/167366
+
+    return {
+        'title': title,
+        'company': company,
+        'location': location,
+        'apply_link': f'https://stackoverflow.com/jobs/{job_id}'
+    }
 
 
 def get_jobs(last_page):
     jobs = []
 
     for page in range(last_page):
+        print(f"Scrapping SO Page: {page}")
         result = requests.get(f'{URL}&pg={page+1}')
         soup = BeautifulSoup(result.text, "html.parser")
         # # job card를 받아온 변수
@@ -47,5 +58,4 @@ def get_so_jobs():
     last_page = get_last_page()
     jobs = get_jobs(last_page)
 
-    return []
-    # return jobs
+    return jobs
